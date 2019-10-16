@@ -160,16 +160,30 @@ reset:
 	/* 清除BSS段 */
 	bl clean_bss
 
-        
+	mrs r0, cpsr         /* 读出cpsr */
+	bic r0, r0, #0xf     /* 修改M4-M0为0b10000, 进入usr模式 */
+	bic r0, r0, #(1<<7)  /* 清除I位, 使能中断 */
+	msr cpsr, r0
 
-    
-   
-    
-    
-   
-    
-   
-    
-    
+	/* 设置 sp_usr */
+	ldr sp, =0x33f00000
+
+	ldr pc, =sdram
+
+sdram:
+    bl uart0_init
+
+    bl print1
+    /* 故意加入一条未定义指令 */
+und_code:
+	.word 0xdeadc0de    /* 未定义指令 */
+	bl print2
+
+    swi 0x123           /* 执行此命令, 触发SWI异常, 进入0x8执行 */
+        
+    //bl main           /* 使用BL命令相对跳转, 程序仍然在NOR/sram执行 */
+    ldr lr, =halt
+    ldr pc, =main       /* 绝对跳转, 跳到SDRAM */
+        
 halt:
     b halt

@@ -77,6 +77,16 @@ void printHex(unsigned int val)
 }
 
 
+void print1(void)
+{
+	puts("abc\n\r");
+}
+
+void print2(void)
+{
+	puts("123\n\r");
+}
+
 void printSWIVal(unsigned int *pSWI)
 {
 	puts("SWI val = ");
